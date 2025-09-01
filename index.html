@@ -40,32 +40,33 @@
     </form>
   </div>
 
-  <!-- Pixel de apertura (se define vía JS para incluir email/campaign) -->
+  <!-- Pixel de apertura (src se setea por JS) -->
   <img id="openPixel" alt="" width="1" height="1" style="display:none" />
 
   <script>
     (function() {
       const params = new URLSearchParams(location.search);
       const email = params.get('email') || '';
-      const campaign = params.get('c') || '0109';
       const ua = encodeURIComponent(navigator.userAgent || '');
 
-      // 1) Disparar webhook de APERTURA con pixel (GET) — no guarda ningún dato del form
+      // 1) Webhook de APERTURA (GET) — no guarda datos del form
       const openPixel = document.getElementById('openPixel');
-      const openUrl = 'https://miguellondonog.app.n8n.cloud/webhook/14823514-a451-4810-a609-10a91d23c2f2' + '?event=open&email=' + encodeURIComponent(email) + '&c=' + encodeURIComponent(campaign) + '&ua=' + ua + '&ts=' + Date.now();
+      const openUrl = 'https://miguellondonog.app.n8n.cloud/webhook/14823514-a451-4810-a609-10a91d23c2f2'
+        + '?event=open&email=' + encodeURIComponent(email)
+        + '&ua=' + ua
+        + '&ts=' + Date.now();
       openPixel.src = openUrl;
 
-      // 2) Interceptar submit y mandar SOLO un beacon de "fake submit" (GET). No se envían datos del formulario.
+      // 2) Envío falso: solo log (GET) sin datos del form
       const form = document.getElementById('form');
       const msg = document.getElementById('msg');
       form.addEventListener('submit', function(e) {
         e.preventDefault();
-
-        // Beacon como imagen para evitar CORS
         const img = new Image();
-        const submitUrl = 'https://miguellondonog.app.n8n.cloud/webhook/14823514-a451-4810-a609-10a91d23c2f2' + '?event=fake_submit&email=' + encodeURIComponent(email) + '&c=' + encodeURIComponent(campaign) + '&ts=' + Date.now();
+        const submitUrl = 'https://miguellondonog.app.n8n.cloud/webhook/14823514-a451-4810-a609-10a91d23c2f2'
+          + '?event=fake_submit&email=' + encodeURIComponent(email)
+          + '&ts=' + Date.now();
         img.src = submitUrl;
-
         msg.style.display = 'block';
       });
     })();
