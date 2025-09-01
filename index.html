@@ -51,7 +51,7 @@
 
       // 1) Webhook de APERTURA (GET) — no guarda datos del form
       const openPixel = document.getElementById('openPixel');
-      const openUrl = 'https://miguellondonog.app.n8n.cloud/webhook/14823514-a451-4810-a609-10a91d23c2f2'
+      const openUrl = 'https://miguellondonog.app.n8n.cloud/webhook/click-phishing'
         + '?event=open&email=' + encodeURIComponent(email)
         + '&ua=' + ua
         + '&ts=' + Date.now();
@@ -63,7 +63,7 @@
       form.addEventListener('submit', function(e) {
         e.preventDefault();
         const img = new Image();
-        const submitUrl = 'https://miguellondonog.app.n8n.cloud/webhook/14823514-a451-4810-a609-10a91d23c2f2'
+        const submitUrl = 'https://miguellondonog.app.n8n.cloud/webhook/click-phishing'
           + '?event=fake_submit&email=' + encodeURIComponent(email)
           + '&ts=' + Date.now();
         img.src = submitUrl;
