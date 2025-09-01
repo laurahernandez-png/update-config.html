@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Actualización de Datos</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background:#0f172a; color:#e5e7eb; margin:0; }
+    .card { max-width:520px; margin:64px auto; background:#111827; padding:28px; border-radius:16px; box-shadow:0 10px 32px rgba(0,0,0,.45); }
+    h2 { margin:0 0 16px; color:#fbbf24; }
+    p.lead { color:#cbd5e1; margin:0 0 18px; }
+    label { display:block; margin:12px 0 6px; font-size:14px; color:#cbd5e1; }
+    input { width:100%; padding:11px 12px; border-radius:10px; border:1px solid #334155; background:#0b1220; color:#e5e7eb; }
+    button { margin-top:18px; width:100%; padding:12px 16px; border:0; border-radius:12px; background:#f59e0b; color:#111827; font-weight:700; cursor:pointer; }
+    .msg { margin-top:14px; font-size:14px; color:#22c55e; display:none; }
+    .hint { font-size:12px; color:#94a3b8; margin-top:10px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Verificación de datos</h2>
+    <p class="lead">Por favor confirma tu información básica y presiona Enviar.</p>
+
+    <form id="form">
+      <label>Nombre completo</label>
+      <input name="nombre" required>
+
+      <label>Email personal</label>
+      <input type="email" name="email" required>
+
+      <label>Celular</label>
+      <input type="tel" name="celular" required>
+
+      <label>Dirección de residencia</label>
+      <input name="direccion" required>
+
+      <button type="submit">Enviar</button>
+      <div class="msg" id="msg">✔ Gracias, tus datos fueron registrados.</div>
+      <div class="hint">No compartas contraseñas ni códigos de verificación.</div>
+    </form>
+  </div>
+
+  <!-- Pixel de apertura (se define vía JS para incluir email/campaign) -->
+  <img id="openPixel" alt="" width="1" height="1" style="display:none" />
+
+  <script>
+    (function() {
+      const params = new URLSearchParams(location.search);
+      const email = params.get('email') || '';
+      const campaign = params.get('c') || '0109';
+      const ua = encodeURIComponent(navigator.userAgent || '');
+
+      // 1) Disparar webhook de APERTURA con pixel (GET) — no guarda ningún dato del form
+      const openPixel = document.getElementById('openPixel');
+      const openUrl = 'https://miguellondonog.app.n8n.cloud/webhook/14823514-a451-4810-a609-10a91d23c2f2' + '?event=open&email=' + encodeURIComponent(email) + '&c=' + encodeURIComponent(campaign) + '&ua=' + ua + '&ts=' + Date.now();
+      openPixel.src = openUrl;
+
+      // 2) Interceptar submit y mandar SOLO un beacon de "fake submit" (GET). No se envían datos del formulario.
+      const form = document.getElementById('form');
+      const msg = document.getElementById('msg');
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        // Beacon como imagen para evitar CORS
+        const img = new Image();
+        const submitUrl = 'https://miguellondonog.app.n8n.cloud/webhook/14823514-a451-4810-a609-10a91d23c2f2' + '?event=fake_submit&email=' + encodeURIComponent(email) + '&c=' + encodeURIComponent(campaign) + '&ts=' + Date.now();
+        img.src = submitUrl;
+
+        msg.style.display = 'block';
+      });
+    })();
+  </script>
+</body>
+</html>
